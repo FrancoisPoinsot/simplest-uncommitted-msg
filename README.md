@@ -7,7 +7,7 @@ This is a simple hardcoded kafka producer to output both committed and uncommitt
 require :
 - maven
 - a running kafka instance
-- Java 1.8 (-_-")
+- Java 1.8 (-_-") Althouh it probably work with some lower versions.
 
 ## docker-compose
 
