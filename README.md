@@ -32,3 +32,30 @@ windows:
 `mvn exec:java -D"exec.mainClass"="CustomProducer.Main"`
 
 
+This will output some messages in topic `topic-test`. You will find both committed and uncommited message in there.
+To check the content, you can use good olde `kafka-console-consumer`:
+
+- read all messages: 
+`kafka-console-consumer --bootstrap-server kafka:9092 --topic topic-test --from-beginning --timeout-ms 2000 --isolation-level read_uncommitted`
+output should look like 
+```
+test msg: 1
+test msg: 2
+test msg: 3
+test msg: 4
+test msg: 5
+test msg: 6
+test msg: 7
+test msg: 8
+test msg: 9
+```
+
+
+- read committed only (default): 
+` kafka-console-consumer --bootstrap-server kafka:9092 --topic topic-test --from-beginning --timeout-ms 2000 --isolation-level read_committed`
+```
+test msg: 0
+test msg: 3
+test msg: 6
+test msg: 9
+```

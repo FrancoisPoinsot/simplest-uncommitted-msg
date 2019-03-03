@@ -31,7 +31,10 @@ public class Main {
 				final String key = "key: " + i;
 				final String message = "test msg: " + i;
 				final ProducerRecord<String, String> record = new ProducerRecord<String, String>(TOPIC, key, message);
-				producer.send(record);
+
+				// if `get()` is not used, aborting the transaction may prevent this message to be send at all. Some kind of optimisation, i guess.
+				// following documentation, use `get()` to simulate synchronous call and force the message to be actually sent.
+				producer.send(record).get();
 
 				if (i % 3 == 0) {
 					producer.commitTransaction();
