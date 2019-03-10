@@ -12,6 +12,7 @@ public class Main {
 	private static final String TOPIC = "topic-test";
 
 	public static void main(final String[] args) {
+		// TODO: setup a few different case on a few different topics.
 		try {
 			final Properties props = new Properties();
 			props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
@@ -25,21 +26,30 @@ public class Main {
 			KafkaProducer<String, String> producer = new KafkaProducer<String, String>(props);
 
 			producer.initTransactions();
+			producer.beginTransaction();
 			for (long i = 0; i < 10; i++) {
-				producer.beginTransaction();
+				boolean commit = i % 5 == 0;
 
 				final String key = "key: " + i;
-				final String message = "test msg: " + i;
+				final String message;
+				if (commit) {
+					message = "Committed: " + i;
+				} else {
+					message = "Uncommited: " + i;
+				}
+
 				final ProducerRecord<String, String> record = new ProducerRecord<String, String>(TOPIC, key, message);
 
 				// if `get()` is not used, aborting the transaction may prevent this message to be send at all. Some kind of optimisation, i guess.
 				// following documentation, use `get()` to simulate synchronous call and force the message to be actually sent.
 				producer.send(record).get();
 
-				if (i % 3 == 0) {
+				if (commit) {
 					producer.commitTransaction();
-				} else {
+					producer.beginTransaction();
+				} else if (i % 5 == 4) {
 					producer.abortTransaction();
+					producer.beginTransaction();
 				}
 			}
 
