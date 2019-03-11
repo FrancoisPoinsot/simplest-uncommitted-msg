@@ -7,7 +7,7 @@ This is a simple hardcoded kafka producer to output both committed and uncommitt
 require :
 - maven
 - a running kafka instance
-- Java 1.8 (-_-") Althouh it probably work with some lower versions.
+- Java 1.8 (-_-") Although it probably work with some lower versions.
 
 ## docker-compose
 
@@ -32,30 +32,42 @@ windows:
 `mvn exec:java -D"exec.mainClass"="CustomProducer.Main"`
 
 
-This will output some messages in topic `topic-test`. You will find both committed and uncommited message in there.
-To check the content, you can use good olde `kafka-console-consumer`:
+This will output some messages in topic `topic-test`. You will find both committed and uncommitted message in there.
+To check the content, you can use good old `kafka-console-consumer`:
 
 - read all messages: 
 `kafka-console-consumer --bootstrap-server kafka:9092 --topic topic-test --from-beginning --timeout-ms 2000 --isolation-level read_uncommitted`
 output should look like 
 ```
-test msg: 1
-test msg: 2
-test msg: 3
-test msg: 4
-test msg: 5
-test msg: 6
-test msg: 7
-test msg: 8
-test msg: 9
+uncommitted
+uncommitted
+Committed 1
+Committed 2
+uncommitted
+uncommitted
+Committed 3
+Committed 4
 ```
-
 
 - read committed only (default): 
 ` kafka-console-consumer --bootstrap-server kafka:9092 --topic topic-test --from-beginning --timeout-ms 2000 --isolation-level read_committed`
 ```
-test msg: 0
-test msg: 3
-test msg: 6
-test msg: 9
+Committed 1
+Committed 2
+Committed 3
+Committed 4
 ```
+
+## test cases
+
+There is a few test case on different topic. 
+If you consume committed only you should find no `uncommitted` value.
+If you consume all committed messages you should find `Committed 1`, `Committed 2`, ... in consecutive order.
+
+In each topic You should find this number of committed messages:
+
+- `topic-test`: 4 messages
+- `topic-test-2`: 2 messages
+- `topic-test-3`: 6 messages
+- `topic-test-4`: 6 messages
+- `topic-test-5`: 1000 messages
