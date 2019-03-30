@@ -15,20 +15,39 @@ import java.util.concurrent.ExecutionException;
 public class Main {
 
 	private static String brokerList;
+
 	public static void main(final String[] args) {
 		Options options = new Options();
-		Option brokers = new Option("b", "brokers", true, "");
-		brokers.setRequired(true);
-		options.addOption(brokers);
+
+		Option brokersOpt = new Option("b", "brokers", true, "");
+		brokersOpt.setRequired(true);
+		options.addOption(brokersOpt);
+
+		Option testCaseOpt = new Option("c", "testcase", true, "number between 1 and 5");
+		testCaseOpt.setRequired(true);
+		options.addOption(testCaseOpt);
 		try {
 			CommandLine cmd = new DefaultParser().parse(options, args);
 			brokerList = cmd.getOptionValue("brokers");
 
-			produceMessagesInSameTransaction();
-			produceMessagesEndWithUncommitted();
-			produceMessagesInSameBatch();
-			produceWithDifferentProducers();
-			//produceABunchOfMessages();	// meh, takes too much time
+			int testCase = Integer.parseInt(cmd.getOptionValue("testcase"));
+			switch (testCase) {
+				case 1:
+					produceMessagesInSameTransaction();
+					break;
+				case 2:
+					produceMessagesEndWithUncommitted();
+					break;
+				case 3:
+					produceMessagesInSameBatch();
+					break;
+				case 4:
+					produceWithDifferentProducers();
+					break;
+				case 5:
+					produceABunchOfMessages();
+					break;
+			}
 		} catch (Exception err) {
 			System.out.println("got error");
 			System.out.println(err);
