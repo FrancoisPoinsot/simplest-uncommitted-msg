@@ -25,7 +25,7 @@ Of course this  require you add a line in your `host` file to resolve "kafka" as
 
 ## run
 
-` java -jar ./target/simplest-uncommitted-msg-0.1-with-dependencies.jar -b kafka:9092"`
+` java -jar ./target/simplest-uncommitted-msg-0.1-jar-with-dependencies.jar -b kafka:9092"`
 
 This will output some messages in topic `topic-test`. You will find both committed and uncommitted message in there.
 To check the content, you can use good old `kafka-console-consumer`:
