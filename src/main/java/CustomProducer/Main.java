@@ -37,7 +37,7 @@ public class Main {
 	}
 
 	private static void produceMessagesInSameTransaction() throws ExecutionException, InterruptedException {
-		final String topic = "uncommitted-topic-test";
+		final String topic = "uncommitted-topic-test1";
 
 		KafkaProducer<String, String> producer = new KafkaProducer<String, String>(getDefaultProperties());
 		producer.initTransactions();
