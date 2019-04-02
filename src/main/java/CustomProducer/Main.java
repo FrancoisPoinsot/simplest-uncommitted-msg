@@ -1,5 +1,9 @@
 package CustomProducer;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -10,23 +14,49 @@ import java.util.concurrent.ExecutionException;
 
 public class Main {
 
+	private static String brokerList;
 
 	public static void main(final String[] args) {
+		Options options = new Options();
+
+		Option brokersOpt = new Option("b", "brokers", true, "");
+		brokersOpt.setRequired(true);
+		options.addOption(brokersOpt);
+
+		Option testCaseOpt = new Option("c", "testcase", true, "number between 1 and 5");
+		testCaseOpt.setRequired(true);
+		options.addOption(testCaseOpt);
 		try {
-			produceMessagesInSameTransaction();
-			produceMessagesEndWithUncommitted();
-			produceMessagesInSameBatch();
-			produceWithDifferentProducers();
-			produceABunchOfMessages();
+			CommandLine cmd = new DefaultParser().parse(options, args);
+			brokerList = cmd.getOptionValue("brokers");
+
+			int testCase = Integer.parseInt(cmd.getOptionValue("testcase"));
+			switch (testCase) {
+				case 1:
+					produceMessagesInSameTransaction();
+					break;
+				case 2:
+					produceMessagesEndWithUncommitted();
+					break;
+				case 3:
+					produceMessagesInSameBatch();
+					break;
+				case 4:
+					produceWithDifferentProducers();
+					break;
+				case 5:
+					produceABunchOfMessages();
+					break;
+			}
 		} catch (Exception err) {
 			System.out.println("got error");
 			System.out.println(err);
 		}
-		System.out.printf("I am done");
+		System.out.printf("\nsimplest uncommitted message producer finished\n");
 	}
 
 	private static void produceMessagesInSameTransaction() throws ExecutionException, InterruptedException {
-		final String topic = "topic-test";
+		final String topic = "uncommitted-topic-test1";
 
 		KafkaProducer<String, String> producer = new KafkaProducer<String, String>(getDefaultProperties());
 		producer.initTransactions();
@@ -58,7 +88,7 @@ public class Main {
 	}
 
 	private static void produceMessagesEndWithUncommitted() throws ExecutionException, InterruptedException {
-		final String topic = "topic-test-2";
+		final String topic = "uncommitted-topic-test-2";
 
 		KafkaProducer<String, String> producer = new KafkaProducer<String, String>(getDefaultProperties());
 		producer.initTransactions();
@@ -85,7 +115,7 @@ public class Main {
 	}
 
 	private static void produceMessagesInSameBatch() throws ExecutionException, InterruptedException {
-		final String topic = "topic-test-3";
+		final String topic = "uncommitted-topic-test-3";
 
 		KafkaProducer<String, String> producer = new KafkaProducer<String, String>(getDefaultProperties());
 		producer.initTransactions();
@@ -119,7 +149,7 @@ public class Main {
 	}
 
 	private static void produceWithDifferentProducers() throws ExecutionException, InterruptedException {
-		final String topic = "topic-test-4";
+		final String topic = "uncommitted-topic-test-4";
 
 		KafkaProducer<String, String> producer1 = new KafkaProducer<String, String>(getDefaultProperties());
 		KafkaProducer<String, String> producer2 = new KafkaProducer<String, String>(getDefaultProperties());
@@ -168,7 +198,7 @@ public class Main {
 	// - commit the first 100
 	// - abort the rest
 	private static void produceABunchOfMessages() {
-		final String topic = "topic-test-5";
+		final String topic = "uncommitted-topic-test-5";
 
 		KafkaProducer<String, String> producer = new KafkaProducer<String, String>(getDefaultProperties());
 
@@ -205,7 +235,7 @@ public class Main {
 
 	private static Properties getDefaultProperties() {
 		final Properties props = new Properties();
-		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "kafka:9092");
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokerList);
 		props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 		props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
 

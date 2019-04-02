@@ -21,16 +21,11 @@ Of course this  require you add a line in your `host` file to resolve "kafka" as
 
 ## install
 
-` mvn clean install`
+` mvn clean package`
 
 ## run
 
-unix:
-` mvn exec:java -Dexec.mainClass="CustomProducer.Main"`
-
-windows:
-`mvn exec:java -D"exec.mainClass"="CustomProducer.Main"`
-
+` java -jar ./target/simplest-uncommitted-msg-0.1-jar-with-dependencies.jar -b kafka:9092"`
 
 This will output some messages in topic `topic-test`. You will find both committed and uncommitted message in there.
 To check the content, you can use good old `kafka-console-consumer`:
